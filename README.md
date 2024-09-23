@@ -25,7 +25,7 @@ By default Hedera uses several nodes, each node requires a custom payload (with 
 
 ## How to use the SDK
 
-The primary focus of the SDK is to provide an easily implmentable approach to use the Fireblocks SDK with Hedera's SDK.
+The primary focus of the SDK is to provide an easily implementable approach to use the Fireblocks SDK with Hedera's SDK.
 We take into account two potential use-cases as well as providing the signature caching functionality:
 
 ### Node count
@@ -45,7 +45,7 @@ Hedera SDK offers the ability to send the transaction to multiple nodes in a seq
 2. Use signature caching as described in the next section
 
 ### Signature Caching
-Hedera's SDK provides the possibility to send a transaction to multiple nodes, to acheive this, each node gets its own transaction payload, differing in the node-id, but as a result each payload needs to be signed. To make this process easier, we provide a functionality which will freeze the node ids that will be used, and will sign all the payloads, to make the execution easier.
+Hedera's SDK provides the possibility to send a transaction to multiple nodes, to achieve this, each node gets its own transaction payload, differing in the node-id, but as a result each payload needs to be signed. To make this process easier, we provide a functionality which will freeze the node ids that will be used, and will sign all the payloads, to make the execution easier.
 
 The following is an example of how to use this functionality;
 ```javascript
@@ -141,7 +141,7 @@ const clientConfig = {
 const client = new FireblocksHederaClient(clientConfig);
 ```
 
-Once created, we want to create signers that will be used for the different vault accoutns we need signatures from, this can be done with a custom function called `getSigner` we added to our provided client:
+Once created, we want to create signers that will be used for the different vault accounts we need signatures from, this can be done with a custom function called `getSigner` we added to our provided client:
 
 ```javascript
 const adminVaultAccountId = Z;
@@ -186,7 +186,7 @@ console.log('The new token ID is ' + tokenId);
 //v2.0.5
 ```
 
-### Multiple Signers with Signauture caching
+### Multiple Signers with Signature caching
 
 As described above regarding multiple nodes, when creating a transaction that needs multiple signers, we want to sign the transaction in advance, before we perform the actual execute operation. To do this, we will call the `preSignTransaction` function which is available in the signers as well;
 ```javascript
