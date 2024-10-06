@@ -1,8 +1,8 @@
 import { AccountId, PublicKey, Transaction } from '@hashgraph/sdk';
 
 export enum ApiBaseUrl {
-	Production = 'https://api.fireblocks.io',
-	Sandbox = 'https://sandbox-api.fireblocks.io'
+	Production = 'https://api.fireblocks.io/v1',
+	Sandbox = 'https://sandbox-api.fireblocks.io/v1'
 }
 
 export interface FireblocksHederaSignerAdditionalFunctionality {
