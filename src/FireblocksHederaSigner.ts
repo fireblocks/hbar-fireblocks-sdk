@@ -70,21 +70,21 @@ export class FireblocksHederaSigner implements Signer, FireblocksHederaSignerAdd
 
 	public async preSignTransaction<T extends Transaction>(transaction: T): Promise<void> {
 		const allBodyBytes: Uint8Array[] = [];
-		const jitter = Math.floor(Math.random() * 5000) + 30000;
-		const now = Date.now() - jitter;
-		const seconds = Math.floor(now / 1000) + Cache.timeDrift;
-		const nanos = Math.floor(now % 1000) * 1000000 + Math.floor(Math.random() * 1000000);
-		const timestamp = new Timestamp(seconds, nanos);
+		if (!transaction.transactionId) {
+			const jitter = Math.floor(Math.random() * 5000) + 30000;
+			const now = Date.now() - jitter;
+			const seconds = Math.floor(now / 1000) + Cache.timeDrift;
+			const nanos = Math.floor(now % 1000) * 1000000 + Math.floor(Math.random() * 1000000);
+			const timestamp = new Timestamp(seconds, nanos);
 
-		transaction.setTransactionId(TransactionId.withValidStart(AccountId.fromString(this.accountId), timestamp));
-		// transaction.setStart(600); // 10 minute validity
-		// transaction.transactionId
-		if (!transaction.isFrozen()) {
+			transaction.setTransactionId(TransactionId.withValidStart(AccountId.fromString(this.accountId), timestamp));
+			// transaction.setStart(600); // 10 minute validity
+			// transaction.transactionId
 			transaction.freezeWith(this.client);
+			//@ts-ignore
+			transaction._transactionIds.setLocked();
+			transaction._nodeAccountIds.setLocked();
 		}
-		//@ts-ignore
-		transaction._transactionIds.setLocked();
-		transaction._nodeAccountIds.setLocked();
 		transaction._signedTransactions.list.forEach((signedTx) => allBodyBytes.push(signedTx.bodyBytes ?? Buffer.alloc(0)));
 		const messagesToSign = allBodyBytes.filter((bodyBytes) => bodyBytes.length !== 0);
 
