@@ -4,3 +4,4 @@
 .env
 fireblocks.key
 /dist
+*.key
