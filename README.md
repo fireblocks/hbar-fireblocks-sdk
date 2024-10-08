@@ -204,7 +204,8 @@ const transaction = await new TokenCreateTransaction()
     .setTreasuryAccountId(treasurySigner.getAccountId())
     .setInitialSupply(5000)
     .setAdminKey(adminPublicKey)
-    .setMaxTransactionFee(new Hbar(30)); //Change the default max transaction fee
+    .setMaxTransactionFee(new Hbar(30))
+    .freezeWith(client); //Change the default max transaction fee
     
 
 // Sign all the payloads ahead of time
