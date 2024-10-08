@@ -1,4 +1,4 @@
 .env
 privKey.key
 /dist
-/node modules
+/node_modules
