@@ -20,7 +20,7 @@ dotenv.config();
 		privateKey: process.env.PRIVATE_KEY_PATH,
 		vaultAccountId: process.env.PRIMARY_VAULT_ACCOUNT_ID,
 		testnet: true,
-		apiEndpoint: `${ApiBaseUrl.Production}/v1`,
+		apiEndpoint: `${ApiBaseUrl.Production}`,
 		// specify a single node to sign transactions for
 		maxNumberOfPayloadsPerTransaction: 1,
 	};

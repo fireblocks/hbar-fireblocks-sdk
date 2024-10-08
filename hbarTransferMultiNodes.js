@@ -21,7 +21,7 @@ dotenv.config();
 		privateKey: process.env.PRIVATE_KEY_PATH,
 		vaultAccountId: process.env.PRIMARY_VAULT_ACCOUNT_ID,
 		testnet: true,
-		apiEndpoint: `${ApiBaseUrl.Production}/v1`,
+		apiEndpoint: `${ApiBaseUrl.Production}`,
 		// do not limit nodes to sign transactions for
 		// maxNumberOfPayloadsPerTransaction: 1,
 	};
@@ -30,7 +30,6 @@ dotenv.config();
 	await client.init();
 
 	const fromAccountId = await client.getFireblocksAccountId();
-	// const adminSigner = await client.getSigner(process.env.PRIMARY_VAULT_ACCOUNT_ID);
 	// const pubKey = await client.getPublicKey();
 
 	const amount = new Hbar(1);
@@ -38,7 +37,8 @@ dotenv.config();
 	// transfer 1 Hbar from the signer's account to 0.0.800 which is the staking rewards account
 	transaction = new TransferTransaction()
 		.addHbarTransfer(fromAccountId, amount.negated())
-		.addHbarTransfer("0.0.800", amount);
+		.addHbarTransfer("0.0.800", amount)
+		.freezeWith(client);
 
 	await client.preSignTransaction(transaction);
 

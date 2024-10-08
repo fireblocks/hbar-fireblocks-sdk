@@ -1,5 +1,5 @@
 const {
-	Hbar, TransferTransaction, TokenCreateTransaction, PrivateKey, TokenType, TokenMintTransaction
+	TokenCreateTransaction, PrivateKey, TokenType, TokenMintTransaction
 } = require('@hashgraph/sdk');
 const { FireblocksHederaClient } = require('./dist/FireblocksHederaClient');
 const { ApiBaseUrl } = require('./dist/type');
@@ -25,7 +25,7 @@ dotenv.config();
 		privateKey: process.env.PRIVATE_KEY_PATH,
 		vaultAccountId: process.env.PRIMARY_VAULT_ACCOUNT_ID,
 		testnet: true,
-		apiEndpoint: `${ApiBaseUrl.Production}/v1`,
+		apiEndpoint: `${ApiBaseUrl.Production}`,
 		// do not limit nodes to sign transactions for
 		// maxNumberOfPayloadsPerTransaction: 1,
 	};

@@ -25,7 +25,7 @@ dotenv.config();
 		privateKey: process.env.PRIVATE_KEY_PATH,
 		vaultAccountId: process.env.PRIMARY_VAULT_ACCOUNT_ID,
 		testnet: true,
-		apiEndpoint: `${ApiBaseUrl.Production}/v1`,
+		apiEndpoint: `${ApiBaseUrl.Production}`,
 		// do not limit nodes to sign transactions for
 		// maxNumberOfPayloadsPerTransaction: 1,
 	};
@@ -35,6 +35,7 @@ dotenv.config();
 
 	// approves transaction fees
 	// the treasury account + supply manager
+	const transactionFeeSigner = await client.getSigner(process.env.PRIMARY_VAULT_ACCOUNT_ID);
 	const treasurySigner = await client.getSigner(process.env.SECONDARY_VAULT_ACCOUNT_ID);
 	const treasuryAccountId = await client.getFireblocksAccountId();
 	const treasuryPublicKey = treasurySigner.getAccountKey();
@@ -45,13 +46,17 @@ dotenv.config();
 		.setInitialSupply(0)
 		.setTreasuryAccountId(treasuryAccountId)
 		.setTokenType(TokenType.FungibleCommon)
-		.setSupplyKey(treasuryPublicKey);
+		.setSupplyKey(treasuryPublicKey)
+		.freezeWith(client);
 
-	// pre-sign, multi nodes = multiple transactions to sign
-	// with treasury account
-	await treasurySigner.preSignTransaction(transaction);
-	// with transaction fee payer
-	await client.preSignTransaction(transaction);
+	await transaction.signWithSigner(treasurySigner);
+	await transaction.signWithSigner(transactionFeeSigner);
+
+	// // pre-sign, multi nodes = multiple transactions to sign
+	// // with treasury account
+	// await treasurySigner.preSignTransaction(transaction);
+	// // with transaction fee payer
+	// await client.preSignTransaction(transaction);
 
 	let txResponse = await transaction.execute(client);
 	//Request the receipt of the transaction
