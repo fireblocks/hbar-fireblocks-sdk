@@ -35,7 +35,7 @@ const clientConfig: FireblocksHederaClientConfig = {
   vaultAccountId: 2,
   testnet: true,
   apiEndpoint: ApiBaseUrl.Production,
-  maxNumberOfPayloadsPerTransaction: 1,
+  // maxNumberOfPayloadsPerTransaction: 2,
 };
 
 // token create function
