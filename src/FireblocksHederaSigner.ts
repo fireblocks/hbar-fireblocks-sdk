@@ -71,13 +71,7 @@ export class FireblocksHederaSigner implements Signer, FireblocksHederaSignerAdd
 	public async preSignTransaction<T extends Transaction>(transaction: T): Promise<void> {
 		const allBodyBytes: Uint8Array[] = [];
 		if (!transaction.transactionId) {
-			const jitter = Math.floor(Math.random() * 5000) + 30000;
-			const now = Date.now() - jitter;
-			const seconds = Math.floor(now / 1000) + Cache.timeDrift;
-			const nanos = Math.floor(now % 1000) * 1000000 + Math.floor(Math.random() * 1000000);
-			const timestamp = new Timestamp(seconds, nanos);
-
-			transaction.setTransactionId(TransactionId.withValidStart(AccountId.fromString(this.accountId), timestamp));
+			transaction.setTransactionId(TransactionId.generate(this.accountId));
 			// transaction.setStart(600); // 10 minute validity
 			// transaction.transactionId
 			transaction.freezeWith(this.client);
