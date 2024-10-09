@@ -5,7 +5,7 @@ const { FireblocksHederaClient } = require('./dist/FireblocksHederaClient');
 const { ApiBaseUrl } = require('./dist/type');
 
 const dotenv = require('dotenv');
-let transaction;
+let client;
 
 dotenv.config();
 
@@ -21,12 +21,12 @@ dotenv.config();
 		privateKey: process.env.PRIVATE_KEY_PATH,
 		vaultAccountId: process.env.PRIMARY_VAULT_ACCOUNT_ID,
 		testnet: true,
-		apiEndpoint: `${ApiBaseUrl.Production}`,
+		apiEndpoint: ApiBaseUrl.Production,
 		// do not limit nodes to sign transactions for
 		// maxNumberOfPayloadsPerTransaction: 1,
 	};
 
-	const client = new FireblocksHederaClient(clientConfig);
+	client = new FireblocksHederaClient(clientConfig);
 	await client.init();
 
 	const fromAccountId = await client.getFireblocksAccountId();
@@ -35,9 +35,9 @@ dotenv.config();
 	const amount = new Hbar(1);
 
 	// transfer 1 Hbar from the signer's account to 0.0.800 which is the staking rewards account
-	transaction = new TransferTransaction()
+	const transaction = new TransferTransaction()
 		.addHbarTransfer(fromAccountId, amount.negated())
-		.addHbarTransfer("0.0.800", amount)
+		// .addHbarTransfer("0.0.800", amount)
 		.freezeWith(client);
 
 	await client.preSignTransaction(transaction);
@@ -55,4 +55,5 @@ dotenv.config();
 	console.log('Failed to do something: ', e);
 	console.error(e);
 	console.log(JSON.stringify(e, null, 2));
+	if (client) {client.close();}
 });

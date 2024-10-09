@@ -5,7 +5,7 @@ const { FireblocksHederaClient } = require('./dist/FireblocksHederaClient');
 const { ApiBaseUrl } = require('./dist/type');
 
 const dotenv = require('dotenv');
-let transaction;
+let client;
 
 dotenv.config();
 
@@ -24,12 +24,12 @@ dotenv.config();
 		privateKey: process.env.PRIVATE_KEY_PATH,
 		vaultAccountId: process.env.PRIMARY_VAULT_ACCOUNT_ID,
 		testnet: true,
-		apiEndpoint: `${ApiBaseUrl.Production}`,
+		apiEndpoint: ApiBaseUrl.Production,
 		// specify a single node to sign transactions for
 		maxNumberOfPayloadsPerTransaction: 1,
 	};
 
-	const client = new FireblocksHederaClient(clientConfig);
+	client = new FireblocksHederaClient(clientConfig);
 	await client.init();
 
 	const signerAccountId = await client.getFireblocksAccountId();
@@ -40,7 +40,7 @@ dotenv.config();
 	const supplyPrivateKey = PrivateKey.generateED25519();
 	const supplyPublicKey = supplyPrivateKey.publicKey;
 
-	transaction = new TokenCreateTransaction()
+	let transaction = new TokenCreateTransaction()
 		.setTokenName("test")
 		.setTokenSymbol("tst")
 		.setInitialSupply(0)
@@ -77,4 +77,5 @@ dotenv.config();
 	console.log('Failed to do something: ', e);
 	console.error(e);
 	console.log(JSON.stringify(e, null, 2));
+	if (client) {client.close();}
 });
