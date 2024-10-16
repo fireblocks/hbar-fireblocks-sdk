@@ -129,7 +129,7 @@ console.log(
 
 This way, the client will sign the transaction but also perform all needed operations that are non-Fireblocks related.
 
-### Multiple Signers - with or without signature caching
+### Multiple Signers
 
 Some transactions in Hedera might require multiple signers, for example creating a token.
 

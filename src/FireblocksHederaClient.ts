@@ -172,35 +172,9 @@ export class FireblocksHederaClient
       message: message,
     }));
 
-    // messages.forEach((message) => {
-    //   const messageHex = Buffer.from(message).toString("hex");
-    //   const sigBuffer =
-    //     transactionPayloadSignatures[messageHex] ?? Buffer.alloc(0);
-    //   signatures.push(sigBuffer);
-    //   if (sigBuffer.length > 0) {
-    //     delete transactionPayloadSignatures[messageHex];
-    //   }
-    // });
-    // This checks that the number of signatures that are not of length 0 matches the number of messages.
-    // If it is it means that all messages were previously signed and cached.
-    // if (
-    //   signatures.filter((sig) => sig.length !== 0).length === messages.length
-    // ) {
-    //   return signatures;
-    // }
-
     let transactionTypesToSign = "";
     const messagesForRawSigning = [];
-    //TODO: Check for > 250
     for (const messageData of messagesData) {
-      // if (!messageData) {
-      //   transactionTypesToSign =
-      //     transactionTypesToSign === ""
-      //       ? "Using cached"
-      //       : transactionTypesToSign + "\n" + "using cached";
-      //   messagesForRawSigning.push({ content: "0".repeat(32) });
-      //   continue;
-      // }
       transactionTypesToSign =
         transactionTypesToSign === ""
           ? messageData.typeToSign
@@ -264,18 +238,6 @@ export class FireblocksHederaClient
         const sigBuffer = Uint8Array.from(
           Buffer.from(signedMessage.signature.fullSig.replace("0x", ""), "hex")
         );
-        // const sigIndex = messages
-        //   .map((msg) =>
-        //     Buffer.from(msg).equals(
-        //       Buffer.from(signedMessage.content.replace("0x", ""), "hex")
-        //     )
-        //   )
-        //   .indexOf(true);
-        // if (sigIndex === -1) {
-        //   throw new Error(
-        //     "Got signature for message which didn't request to sign"
-        //   );
-        // }
         const payloadHex = signedMessage.content.replace("0x", "");
         const signature = pubKey._toProtobufSignature(sigBuffer);
         if (signatures[payloadHex] === undefined) {
@@ -337,19 +299,6 @@ export class FireblocksHederaClient
     transaction: T
   ): Promise<void> {
     const allBodyBytes: Uint8Array[] = [];
-    // const jitter = Math.floor(Math.random() * 5000) + 30000;
-    // const now = Date.now() - jitter;
-    // const seconds = Math.floor(now / 1000) + Cache.timeDrift;
-    // const nanos =
-    //   Math.floor(now % 1000) * 1000000 + Math.floor(Math.random() * 1000000);
-    // const timestamp = new Timestamp(seconds, nanos);
-
-    // transaction.setTransactionId(
-    //   TransactionId.withValidStart(
-    //     AccountId.fromString(this.accountId),
-    //     timestamp
-    //   )
-    // );
     transaction.setTransactionId(TransactionId.generate(this.accountId));
     if (!transaction.isFrozen()) {
       transaction.freezeWith(this);
