@@ -29,44 +29,46 @@ The primary focus of the SDK is to provide an easily implmentable approach to us
 We take into account two potential use-cases as well as providing the signature caching functionality:
 
 ### Node count
+
 Hedera SDK offers the ability to send the transaction to multiple nodes in a sequential order in case one does not accept. As such each transaction to a node has their own unique node id embeded in the transaction. This means that each transaction to a node needs to be different and requires its own signature. We offer two approaches to this matter;
+
 1. Set the maximum number of nodes to one; this will make it so that when sending a transaction only a single node (determined by the Hedera's SDK's internal mechanisms), to do this use the `maxNumberOfPayloadsPerTransaction`:
-    ```javascript
-    const clientConfig = {
-        apiKey: '01234567-89ab-cdef-0123-456789abcdef',
-        privateKey: '/path/to/private/key',
-        vaultAccountId: X,
-        testnet: true,
-        apiEndpoint: Y,
-        maxNumberOfPayloadsPerTransaction: 1
-    };
-    ```
+
+   ```javascript
+   const clientConfig = {
+     apiKey: "01234567-89ab-cdef-0123-456789abcdef",
+     privateKey: "/path/to/private/key",
+     vaultAccountId: X,
+     testnet: true,
+     apiEndpoint: Y,
+     maxNumberOfPayloadsPerTransaction: 1,
+   };
+   ```
 
 2. Use signature caching as described in the next section
 
 ### Signature Caching
+
 Hedera's SDK provides the possibility to send a transaction to multiple nodes, to acheive this, each node gets its own transaction payload, differing in the node-id, but as a result each payload needs to be signed. To make this process easier, we provide a functionality which will freeze the node ids that will be used, and will sign all the payloads, to make the execution easier.
 
 The following is an example of how to use this functionality;
+
 ```javascript
 const clientConfig = {
-    apiKey: '01234567-89ab-cdef-0123-456789abcdef',
-    privateKey: '/path/to/private/key',
-    vaultAccountId: X,
-    testnet: true,
-    apiEndpoint: Y,
+  apiKey: "01234567-89ab-cdef-0123-456789abcdef",
+  privateKey: "/path/to/private/key",
+  vaultAccountId: X,
+  testnet: true,
+  apiEndpoint: Y,
 };
 const client = new FireblocksHederaClient(clientConfig);
 
 // Create a transaction to transfer 1 HBAR
 const transaction = new TransferTransaction()
-    .addHbarTransfer(OPERATOR_ID, new Hbar(-1))
-    .addHbarTransfer(newAccountId, new Hbar(1));
+  .addHbarTransfer(OPERATOR_ID, new Hbar(-1))
+  .addHbarTransfer(newAccountId, new Hbar(1));
 
-// Sign all the payloads ahead of time
-await client.preSignTransaction(transaction);
-
-//Submit the transaction to a Hedera network
+//Sign and Submit the transaction to a Hedera network, the execute method will cache the signatures for all nodes.
 const txResponse = await transaction.execute(client);
 
 //Request the receipt of the transaction
@@ -75,7 +77,9 @@ const receipt = await txResponse.getReceipt(client);
 //Get the transaction consensus status
 const transactionStatus = receipt.status;
 
-console.log('The transaction consensus status is ' + transactionStatus.toString());
+console.log(
+  "The transaction consensus status is " + transactionStatus.toString()
+);
 
 //v2.0.0
 ```
@@ -88,25 +92,24 @@ To create the client:
 
 ```javascript
 const clientConfig = {
-    apiKey: '01234567-89ab-cdef-0123-456789abcdef',
-    privateKey: '/path/to/private/key',
-    vaultAccountId: X,
-    testnet: true,
-    apiEndpoint: Y,
+  apiKey: "01234567-89ab-cdef-0123-456789abcdef",
+  privateKey: "/path/to/private/key",
+  vaultAccountId: X,
+  testnet: true,
+  apiEndpoint: Y,
 };
 const client = new FireblocksHederaClient(clientConfig);
 ```
 
 **Note** - we suggest either using signature caching (see above) or set the maximum number of nodes to 1.
 
-
 Once the client is created you can simply use it to execute transactions, for example (original source code taken from [here](https://docs.hedera.com/hedera/sdks-and-apis/sdks/accounts-and-hbar/transfer-cryptocurrency)):
 
 ```javascript
 // Create a transaction to transfer 1 HBAR
 const transaction = new TransferTransaction()
-    .addHbarTransfer(OPERATOR_ID, new Hbar(-1))
-    .addHbarTransfer(newAccountId, new Hbar(1));
+  .addHbarTransfer(OPERATOR_ID, new Hbar(-1))
+  .addHbarTransfer(newAccountId, new Hbar(1));
 
 //Submit the transaction to a Hedera network
 const txResponse = await transaction.execute(client);
@@ -117,14 +120,16 @@ const receipt = await txResponse.getReceipt(client);
 //Get the transaction consensus status
 const transactionStatus = receipt.status;
 
-console.log('The transaction consensus status is ' + transactionStatus.toString());
+console.log(
+  "The transaction consensus status is " + transactionStatus.toString()
+);
 
 //v2.0.0
 ```
 
 This way, the client will sign the transaction but also perform all needed operations that are non-Fireblocks related.
 
-### Multiple Signers
+### Multiple Signers - with or without signature caching
 
 Some transactions in Hedera might require multiple signers, for example creating a token.
 
@@ -132,11 +137,11 @@ We first want to create a client, similar to how we did before:
 
 ```javascript
 const clientConfig = {
-    apiKey: '01234567-89ab-cdef-01234-56789abcdef0',
-    privateKey: '/path/to/private/key',
-    vaultAccountId: X,
-    testnet: true,
-    apiEndpoint: Y,
+  apiKey: "01234567-89ab-cdef-01234-56789abcdef0",
+  privateKey: "/path/to/private/key",
+  vaultAccountId: X,
+  testnet: true,
+  apiEndpoint: Y,
 };
 const client = new FireblocksHederaClient(clientConfig);
 ```
@@ -161,63 +166,19 @@ Finally, you can use the provided client and signers to execute the transaction(
 ```javascript
 //Create the transaction and freeze for manual signing
 const transaction = await new TokenCreateTransaction()
-    .setTokenName('Your Token Name')
-    .setTokenSymbol('F')
-    .setTreasuryAccountId(treasurySigner.getAccountId())
-    .setInitialSupply(5000)
-    .setAdminKey(adminPublicKey)
-    .setMaxTransactionFee(new Hbar(30)) //Change the default max transaction fee
-    .freezeWith(client);
+  .setTokenName("Your Token Name")
+  .setTokenSymbol("F")
+  .setTreasuryAccountId(treasurySigner.getAccountId())
+  .setInitialSupply(5000)
+  .setAdminKey(adminPublicKey)
+  .setMaxTransactionFee(new Hbar(30)); //Change the default max transaction fee
 
-//Sign the transaction with the token adminKey and the token treasury account private key
-const signTx = await (await transaction.signWithSigner(adminSigner)).signWithSigner(treasurySigner);
+// Add the signers to the client, this can be done multiple times if more than 2 signers are needed
+await client.addSigner(`${adminVaultAccountId}`);
+await client.addSigner(`${treasuryVaultAccountId}`);
 
-//Sign the transaction with the client operator private key and submit to a Hedera network
-const txResponse = await signTx.execute(client);
-
-//Get the receipt of the transaction
-const receipt = await txResponse.getReceipt(client);
-
-//Get the token ID from the receipt
-const tokenId = receipt.tokenId;
-
-console.log('The new token ID is ' + tokenId);
-
-//v2.0.5
-```
-
-### Multiple Signers with Signauture caching
-
-As described above regarding multiple nodes, when creating a transaction that needs multiple signers, we want to sign the transaction in advance, before we perform the actual execute operation. To do this, we will call the `preSignTransaction` function which is available in the signers as well;
-```javascript
-const adminVaultAccountId = Z;
-const adminSigner = await client.getSigner(adminVaultAccountId);
-const adminPublicKey = (await adminSigner.getAccountInfo()).key;
-
-const treasuryVaultAccountId = W;
-const treasurySigner = await client.getSigner(treasuryVaultAccountId);
-
-//Create the transaction
-const transaction = await new TokenCreateTransaction()
-    .setTokenName('Your Token Name')
-    .setTokenSymbol('F')
-    .setTreasuryAccountId(treasurySigner.getAccountId())
-    .setInitialSupply(5000)
-    .setAdminKey(adminPublicKey)
-    .setMaxTransactionFee(new Hbar(30))
-    .freezeWith(client); //Change the default max transaction fee
-    
-
-// Sign all the payloads ahead of time
-await treasurySigner.preSignTransaction(transaction);
-await adminSigner.preSignTransaction(transaction);
-await client.preSignTransaction(transaction);
-
-//Sign the transaction with the token adminKey and the token treasury account private key
-const signTx = await (await transaction.signWithSigner(adminSigner)).signWithSigner(treasurySigner);
-
-//Sign the transaction with the client operator private key and submit to a Hedera network
-const txResponse = await signTx.execute(client);
+// sign the transaction with all signers and broadcast, the execute method will also cache the signatures if multiuple nodes are configured in the client config
+let txResponse = await transaction.execute(client);
 
 //Get the receipt of the transaction
 const receipt = await txResponse.getReceipt(client);
@@ -225,7 +186,7 @@ const receipt = await txResponse.getReceipt(client);
 //Get the token ID from the receipt
 const tokenId = receipt.tokenId;
 
-console.log('The new token ID is ' + tokenId);
+console.log("The new token ID is " + tokenId);
 
 //v2.0.5
 ```
