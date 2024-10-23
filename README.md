@@ -1,6 +1,6 @@
 # Fireblocks Hedera SDK Client and Signer
 
-This repo contains an implementation of an hedera Client that is used for signing operations with the Fireblocks SDK.
+This repo contains an implementation of a Hedera Client that is used for signing operations with the Fireblocks SDK.
 The implementation in this repo follows [HIP-338](https://hips.hedera.com/hip/hip-338).<br/>
 **The implementation is a wrapper for Raw Signing**, handling all the raw signing calls required to abstract it and make for an easy and seamless integration with Fireblocks and the Hedera SDK
 
@@ -17,11 +17,11 @@ To use this Client you will need the following:
 
 This SDK provides two functionalities depending on what is needed;
 
-1. Client - an HIP-338 client which extends Hedera's standard client (Node client by default) and provides signing functionality so it can be easily integrated into existing code
-2. Signer - an HIP-338 signer that can be used in case of multi-signature operations
+1. Client - a HIP-338 client which extends Hedera's SDK client and provides signing functionality so it can be easily integrated into existing code
+2. Signer - a HIP-338 signer that can be used in case of multi-signature operations
 
 The Client we provide simply extends Hedera's client. Once a signature is required, the Fireblocks SDK will request a signature and provide the result to the caller.<br/>
-By default Hedera uses several nodes, each node requires a custom payload (with relevant node ID information) to be signed, and as a result we offer a caching signing mechanism, please see the signature caching below.
+By default the Hedera SDK prepares transactions for several nodes in order to abstract developers from retry mechanisms in the event a node is unavailable. Each individual node transactions contains the ID of the node the transaction is prepared for, resulting in the need to sign multiple transactions at once (only one of the transactions will be executed by the SDK). For efficiency, we offer a caching signing mechanism, please see the signature caching below.
 
 ## How to use the SDK
 
@@ -29,8 +29,8 @@ The primary focus of the SDK is to provide an easily implementable approach to u
 We take into account two potential use-cases as well as providing the signature caching functionality:
 
 ### Node count
-Hedera SDK offers the ability to send the transaction to multiple nodes in a sequential order in case one does not accept. As such each transaction to a node has their own unique node id embeded in the transaction. This means that each transaction to a node needs to be different and requires its own signature. We offer two approaches to this matter;
-1. Set the maximum number of nodes to one; this will make it so that when sending a transaction only a single node (determined by the Hedera's SDK's internal mechanisms), to do this use the `maxNumberOfPayloadsPerTransaction`:
+The Hedera SDK offers the ability to send the transaction to multiple nodes in a sequential order in case one does not accept. As such each transaction to a node has their own unique node id embedded in the transaction. This means that each transaction to a node needs to be different and requires its own signature. We offer two approaches to this matter;
+1. Set the maximum number of nodes to one; this will make it so that when sending a transaction only a single node (determined by the Hedera's SDK's internal mechanisms) will be selected at random, to do this use the `maxNumberOfPayloadsPerTransaction`:
     ```javascript
     const clientConfig = {
         apiKey: '01234567-89ab-cdef-0123-456789abcdef',
@@ -42,10 +42,19 @@ Hedera SDK offers the ability to send the transaction to multiple nodes in a seq
     };
     ```
 
-2. Use signature caching as described in the next section
+2. Let the SDK choose a number of random nodes and use signature caching as described in the next section
+    ```javascript
+    const clientConfig = {
+        apiKey: '01234567-89ab-cdef-0123-456789abcdef',
+        privateKey: '/path/to/private/key',
+        vaultAccountId: X,
+        testnet: true,
+        apiEndpoint: Y,
+    };
+    ```
 
 ### Signature Caching
-Hedera's SDK provides the possibility to send a transaction to multiple nodes, to achieve this, each node gets its own transaction payload, differing in the node-id, but as a result each payload needs to be signed. To make this process easier, we provide a functionality which will freeze the node ids that will be used, and will sign all the payloads, to make the execution easier.
+Hedera's SDK provides the possibility to send a transaction to multiple nodes, to achieve this, each node gets its own transaction payload, differing in the node ID, as a result each payload needs to be signed. To make this process easier, we provide a functionality which will sign all the payloads at once, to make the execution easier and more efficient.
 
 The following is an example of how to use this functionality;
 ```javascript
@@ -57,6 +66,7 @@ const clientConfig = {
     apiEndpoint: Y,
 };
 const client = new FireblocksHederaClient(clientConfig);
+await client.init();
 
 // Create a transaction to transfer 1 HBAR
 const transaction = new TransferTransaction()
@@ -95,10 +105,10 @@ const clientConfig = {
     apiEndpoint: Y,
 };
 const client = new FireblocksHederaClient(clientConfig);
+await client.init();
 ```
 
 **Note** - we suggest either using signature caching (see above) or set the maximum number of nodes to 1.
-
 
 Once the client is created you can simply use it to execute transactions, for example (original source code taken from [here](https://docs.hedera.com/hedera/sdks-and-apis/sdks/accounts-and-hbar/transfer-cryptocurrency)):
 
@@ -139,6 +149,7 @@ const clientConfig = {
     apiEndpoint: Y,
 };
 const client = new FireblocksHederaClient(clientConfig);
+await client.init();
 ```
 
 Once created, we want to create signers that will be used for the different vault accounts we need signatures from, this can be done with a custom function called `getSigner` we added to our provided client:

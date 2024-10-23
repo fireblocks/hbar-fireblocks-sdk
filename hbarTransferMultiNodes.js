@@ -1,5 +1,5 @@
 const {
-	Hbar, TransferTransaction
+	Hbar, TransferTransaction, PublicKey
 } = require('@hashgraph/sdk');
 const { FireblocksHederaClient } = require('./dist/FireblocksHederaClient');
 const { ApiBaseUrl } = require('./dist/type');

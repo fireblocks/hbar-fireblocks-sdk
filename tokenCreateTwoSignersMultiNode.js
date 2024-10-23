@@ -1,5 +1,5 @@
 const {
-	TokenCreateTransaction, TokenType
+	TokenCreateTransaction, TokenType, PublicKey
 } = require('@hashgraph/sdk');
 const { FireblocksHederaClient } = require('./dist/FireblocksHederaClient');
 const { ApiBaseUrl } = require('./dist/type');
