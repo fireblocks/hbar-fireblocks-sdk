@@ -1,9 +1,5 @@
 import { AccountId, PublicKey, Transaction } from "@hashgraph/sdk";
-
-export enum ApiBaseUrl {
-  Production = "https://api.fireblocks.io/v1",
-  Sandbox = "https://sandbox-api.fireblocks.io/v1",
-}
+import { BasePath } from "@fireblocks/ts-sdk";
 
 export interface FireblocksHederaSignerAdditionalFunctionality {
   /**
@@ -51,7 +47,7 @@ export type FireblocksHederaClientConfig = {
   /**
    * The API Endpoint to use, if such is relevant (sandbox, production, etc.)
    */
-  apiEndpoint?: ApiBaseUrl;
+  apiEndpoint?: BasePath;
 
   /**
    * Hedera SDK allows for signing the same transaction for multiple nodes. This allows us to
