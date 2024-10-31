@@ -89,14 +89,10 @@ export class FireblocksHederaClient
       this
     );
     await signer.init();
-    console.log(`exited signer init`);
     return signer;
   }
 
   private async populateVaultAccountData() {
-    console.log(
-      `In populateVaultAccountData, pubKey length: ${this.vaultAccountPublicKey.length}`
-    );
     if (this.vaultAccountPublicKey.length != 0) {
       return;
     }
@@ -130,16 +126,13 @@ export class FireblocksHederaClient
   }
 
   public async init() {
-    console.log(`in client init, VA: ${this.config.vaultAccountId}`);
     await this.populateVaultAccountData();
-    console.log(`exited client init`);
   }
 
   private async setupUndelyingClient() {
     try {
       if (this.vaultAccountPublicKey.length == 0)
         await this.populateVaultAccountData();
-      console.log(`in setupUndelyingClient`);
       this.setOperatorWith(
         this.accountId,
         PublicKey.fromBytesED25519(this.vaultAccountPublicKey),
@@ -162,7 +155,6 @@ export class FireblocksHederaClient
     }
 
     if (messages instanceof Buffer) {
-      console.log(`inside multiSign tx, calling signTx`);
       //@ts-ignore
       return await this.signTx(messages);
     }
@@ -211,10 +203,8 @@ export class FireblocksHederaClient
           tx.data.status
         )
       ) {
-        console.log(
-          `Tx Id: ${txId}, status: ${tx.data.status}, note: ${tx.data.note}`
-        );
-        await new Promise((r) => setTimeout(r, 3000));
+        console.log(`Polling for Tx Id: ${txId}, status: ${tx.data.status}`);
+        await new Promise((r) => setTimeout(r, 1000));
         tx = await this.fireblocksSDK.transactions.getTransaction({ txId });
       }
       if (
@@ -366,7 +356,6 @@ export async function signMultipleMessages(
   }));
   messages.forEach((message) => {
     const messageHex = Buffer.from(message).toString("hex");
-    console.log(`inside signMultipleMsgs with msg: ${messageHex}`);
     const sigBuffer =
       transactionPayloadSignatures[messageHex] ?? Buffer.alloc(0);
     signatures.push(sigBuffer);
@@ -427,10 +416,8 @@ export async function signMultipleMessages(
       tx.data.status
     )
   ) {
-    console.log(
-      `Tx Id: ${txId}, status: ${tx.data.status}, note: ${tx.data.note}`
-    );
-    await new Promise((r) => setTimeout(r, 5000));
+    console.log(`Polling for Tx Id: ${txId}, status: ${tx.data.status}`);
+    await new Promise((r) => setTimeout(r, 1000));
     tx = await fireblocksSDK.transactions.getTransaction({ txId });
   }
   if (["BLOCKED", "REJECTED", "CANCELLED", "FAILED"].includes(tx.data.status)) {

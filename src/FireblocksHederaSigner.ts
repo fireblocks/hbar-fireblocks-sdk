@@ -164,7 +164,6 @@ export class FireblocksHederaSigner
   }
 
   async init() {
-    console.log(`in signer init, for VA: ${this.vaultAccountId}`);
     if (this.vaultAccountPublicKey.length != 0) {
       return;
     }

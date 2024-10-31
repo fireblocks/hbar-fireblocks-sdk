@@ -11,7 +11,6 @@ export async function signWith(
   if (!this._signOnDemand) {
     this._requireFrozen();
   }
-  console.log(`in the patch`);
   const publicKeyData = publicKey.toBytesRaw();
 
   // note: this omits the DER prefix on purpose because Hedera doesn't

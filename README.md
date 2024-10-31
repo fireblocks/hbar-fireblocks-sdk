@@ -32,26 +32,7 @@ We take into account two potential use-cases as well as providing the signature 
 
 Hedera SDK offers the ability to send the transaction to multiple nodes in a sequential order in case one does not accept. As such each transaction to a node has their own unique node id embeded in the transaction. This means that each transaction to a node needs to be different and requires its own signature. We offer two approaches to this matter;
 
-1. Set the maximum number of nodes to one; this will make it so that when sending a transaction only a single node (determined by the Hedera's SDK's internal mechanisms), to do this use the `maxNumberOfPayloadsPerTransaction`:
-
-   ```javascript
-   const clientConfig = {
-     apiKey: "01234567-89ab-cdef-0123-456789abcdef",
-     privateKey: "/path/to/private/key",
-     vaultAccountId: X,
-     testnet: true,
-     apiEndpoint: Y,
-     maxNumberOfPayloadsPerTransaction: 1,
-   };
-   ```
-
-2. Use signature caching as described in the next section
-
-### Signature Caching
-
-Hedera's SDK provides the possibility to send a transaction to multiple nodes, to acheive this, each node gets its own transaction payload, differing in the node-id, but as a result each payload needs to be signed. To make this process easier, we provide a functionality which will freeze the node ids that will be used, and will sign all the payloads, to make the execution easier.
-
-The following is an example of how to use this functionality;
+Set the maximum number of nodes to one; this will make it so that when sending a transaction only a single node (determined by the Hedera's SDK's internal mechanisms), to do this use the `maxNumberOfPayloadsPerTransaction`:
 
 ```javascript
 const clientConfig = {
@@ -60,33 +41,13 @@ const clientConfig = {
   vaultAccountId: X,
   testnet: true,
   apiEndpoint: Y,
+  maxNumberOfPayloadsPerTransaction: 1,
 };
-const client = new FireblocksHederaClient(clientConfig);
-
-// Create a transaction to transfer 1 HBAR
-const transaction = new TransferTransaction()
-  .addHbarTransfer(OPERATOR_ID, new Hbar(-1))
-  .addHbarTransfer(newAccountId, new Hbar(1));
-
-//Sign and Submit the transaction to a Hedera network, the execute method will cache the signatures for all nodes.
-const txResponse = await transaction.execute(client);
-
-//Request the receipt of the transaction
-const receipt = await txResponse.getReceipt(client);
-
-//Get the transaction consensus status
-const transactionStatus = receipt.status;
-
-console.log(
-  "The transaction consensus status is " + transactionStatus.toString()
-);
-
-//v2.0.0
 ```
 
 ### Standard Use-case
 
-In this use-case we assume only a single signature is required, as such we provide a singular client which will sign the transaction.
+In this use-case we assume only a single signer is required, as such we provide a singular client which will sign the transaction.
 
 To create the client:
 
@@ -101,15 +62,17 @@ const clientConfig = {
 const client = new FireblocksHederaClient(clientConfig);
 ```
 
-**Note** - we suggest either using signature caching (see above) or set the maximum number of nodes to 1.
-
 Once the client is created you can simply use it to execute transactions, for example (original source code taken from [here](https://docs.hedera.com/hedera/sdks-and-apis/sdks/accounts-and-hbar/transfer-cryptocurrency)):
 
 ```javascript
+const fromAccountId = await client.getFireblocksAccountId();
+const amount = new Hbar(1);
+const destAddress = "0.0.1234";
+
 // Create a transaction to transfer 1 HBAR
 const transaction = new TransferTransaction()
-  .addHbarTransfer(OPERATOR_ID, new Hbar(-1))
-  .addHbarTransfer(newAccountId, new Hbar(1));
+  .addHbarTransfer(fromAccountId, amount.negated())
+  .addHbarTransfer(destAddress, amount);
 
 //Submit the transaction to a Hedera network
 const txResponse = await transaction.execute(client);
@@ -121,7 +84,7 @@ const receipt = await txResponse.getReceipt(client);
 const transactionStatus = receipt.status;
 
 console.log(
-  "The transaction consensus status is " + transactionStatus.toString()
+  `Transaction ${txResponse.transactionId.toString()} finished with ${transactionStatus.toString()}`
 );
 
 //v2.0.0
@@ -186,7 +149,9 @@ const receipt = await txResponse.getReceipt(client);
 //Get the token ID from the receipt
 const tokenId = receipt.tokenId;
 
-console.log("The new token ID is " + tokenId);
+console.log(
+  `Token Create Transaction ${txResponse.transactionId.toString()} finished with ${transactionStatus.toString()}`
+);
 
 //v2.0.5
 ```
