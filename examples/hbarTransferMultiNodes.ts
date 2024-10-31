@@ -1,6 +1,7 @@
 import { Hbar, TransferTransaction } from "@hashgraph/sdk";
 import { FireblocksHederaClient } from "../src/FireblocksHederaClient";
-import { ApiBaseUrl, FireblocksHederaClientConfig } from "../src/type";
+import { FireblocksHederaClientConfig } from "../src/type";
+import { BasePath } from "@fireblocks/ts-sdk";
 
 let client: FireblocksHederaClient;
 
@@ -12,7 +13,7 @@ let client: FireblocksHederaClient;
     privateKey: "/PATH/TO/API/SECRET/KEY",
     vaultAccountId: 0, // update the client's vault account id
     testnet: false,
-    apiEndpoint: ApiBaseUrl.US,
+    apiEndpoint: BasePath.US,
   };
   client = new FireblocksHederaClient(clientConfig);
   await client.init();
