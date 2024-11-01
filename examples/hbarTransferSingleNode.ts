@@ -5,15 +5,16 @@ import { BasePath } from "@fireblocks/ts-sdk";
 
 let client: FireblocksHederaClient;
 
-// code example for hbar transfer from one account to another, examplifying the use case of a single signer and multiple nodes (no limitation)
+// code example for hbar transfer from one account to another, examplifying the use case of a single signer and limitation of nodes to a single node
 
 (async () => {
   const clientConfig: FireblocksHederaClientConfig = {
-    apiKey: "YOUR_API_KEY_ID",
-    privateKey: "/PATH/TO/API/SECRET/KEY",
-    vaultAccountId: 0, // update the client's vault account id
+    apiKey: process.env.API_KEY || "",
+    privateKey: "./privKey.key",
+    vaultAccountId: 2, // update the client's vault account id
     testnet: false,
     apiEndpoint: BasePath.US,
+    maxNumberOfPayloadsPerTransaction: 1,
   };
   client = new FireblocksHederaClient(clientConfig);
   await client.init();

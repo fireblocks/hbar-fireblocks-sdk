@@ -9,9 +9,9 @@ let client: FireblocksHederaClient;
 
 (async () => {
   const clientConfig: FireblocksHederaClientConfig = {
-    apiKey: "YOUR_API_KEY_ID",
-    privateKey: "/PATH/TO/API/SECRET/KEY",
-    vaultAccountId: 0, // update the client's vault account id
+    apiKey: process.env.API_KEY || "",
+    privateKey: "./privKey.key",
+    vaultAccountId: 2, // update the client's vault account id
     testnet: false,
     apiEndpoint: BasePath.US,
     maxNumberOfPayloadsPerTransaction: 1,
