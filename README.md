@@ -210,7 +210,7 @@ The following is the configuration used for the Fireblocks Hedera client setup:
     /**
      * The API Endpoint to use, if such is relevant (sandbox, production, etc.)
      */
-    apiEndpoint?: ApiBaseUrl;
+    apiEndpoint?: BasePath;
 
     /**
      * Hedera SDK allows for signing the same transaction for multiple nodes. This allows us to
