@@ -90,7 +90,7 @@ console.log(
 //v2.0.0
 ```
 
-This way, the client will sign the transaction but also perform all needed operations that are non-Fireblocks related.
+This way, the client will sign the transaction and perform all needed operations that are non-Fireblocks related.
 
 ### Multiple Signers
 
@@ -155,7 +155,33 @@ console.log(
 
 //v2.0.5
 ```
+## Example files
+Included in this SDK are [four example files](./examples) showcasing different use cases:
+- **HBAR Transfer** - Using the SDK with a single signer AND limiting the number of nodes to one.
+- **HBAR Transfer** - Using the SDK with a single signer AND no limit to the number of nodes.
+- **Token Creation** - Using the SDK with two signers AND limiting the number of nodes to one.
+- **Token Creation** - Using the SDK with two signers AND no limit to the number of nodes.
 
+### How to run the example scripts
+1. Clone the repo
+2. Install the dependencies
+```
+npm install
+```
+3. Update the client config parameters
+4. Run the example script
+```
+ts-node src/script-name.ts
+```
+### Successful execution
+**HBAR Transfer**
+```
+Transaction 0.0.4363872@1730366816.250676454 finished with SUCCESS
+```
+**Token Creation**
+```
+Token Create Transaction 0.0.4338434@1730471891.681xxx finished with SUCCESS
+```
 ## Configuration
 
 The following is the configuration used for the Fireblocks Hedera client setup:
