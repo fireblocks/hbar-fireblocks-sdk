@@ -12,7 +12,7 @@ let client: FireblocksHederaClient;
     apiKey: "YOUR_API_KEY_ID",
     privateKey: "/PATH/TO/API/SECRET/KEY",
     vaultAccountId: 0, // update the client's vault account id
-    testnet: false,
+    testnet: true,
     apiEndpoint: BasePath.US,
     maxNumberOfPayloadsPerTransaction: 1,
   };
