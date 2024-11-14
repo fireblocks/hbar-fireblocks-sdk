@@ -222,3 +222,5 @@ The following is the configuration used for the Fireblocks Hedera client setup:
      */
     maxNumberOfPayloadsPerTransaction?: number;
 ```
+##Licence
+MIT
