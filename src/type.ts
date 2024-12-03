@@ -1,15 +1,7 @@
-import { AccountId, PublicKey, Transaction } from "@hashgraph/sdk";
+import { AccountId, PublicKey } from "@hashgraph/sdk";
 import { BasePath } from "@fireblocks/ts-sdk";
 
 export interface FireblocksHederaSignerAdditionalFunctionality {
-  /**
-   * In case you use {@see FireblocksHederaClientConfig.maxNumberOfPayloadsPerRequest}, you can use this function
-   * to pre-sign all the potential payloads of the transaction. This will result in the transaction not having to be
-   * signed during execution of its _beforeExecute function call.
-   * @param transaction The transaction to sign
-   */
-  preSignTransaction<T extends Transaction>(transaction: T): Promise<void>;
-
   /**
    * Gets the account ID associated with the specified {@link FireblocksHederaClientConfig} provided.
    * Is async because we might need to initiate the client beforehand, if not yet initiated.
@@ -27,7 +19,7 @@ export type FireblocksHederaClientConfig = {
   /**
    * The API User's private key's path
    */
-  privateKey: string;
+  secretKeyPath: string;
 
   /**
    * The API User's API key
@@ -53,9 +45,7 @@ export type FireblocksHederaClientConfig = {
    * Hedera SDK allows for signing the same transaction for multiple nodes. This allows us to
    * send the transaction to various nodes until one of them accepts it.
    * This means that for each payload we submit a raw signing transaction.
-   * By default this is set to 1, if you wish to set it to some larger number, it's completely fine, however in that scenario we
-   * suggest to pre-sign the transactions instead of using the standard notation.
-   * @see FireblocksHederaSignerAdditionalFunctionality.preSignTransaction
+   * If not specified in the clientConfig, the default will be multiple node transactions.
    */
   maxNumberOfPayloadsPerTransaction?: number;
 };

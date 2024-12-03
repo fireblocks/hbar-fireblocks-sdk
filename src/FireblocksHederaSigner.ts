@@ -5,7 +5,6 @@ import {
   AccountInfo,
   AccountInfoQuery,
   AccountRecordsQuery,
-  Cache,
   Client,
   Executable,
   Key,
@@ -13,7 +12,6 @@ import {
   PublicKey,
   Signer,
   SignerSignature,
-  Timestamp,
   Transaction,
   TransactionId,
   TransactionRecord,
@@ -79,7 +77,10 @@ export class FireblocksHederaSigner
       this.client = client;
     }
   }
-
+  /**
+   * A method that caches signatures for multiple nodes usage.
+   * @param transaction - hbar transaction
+   */
   public async preSignTransaction<T extends Transaction>(
     transaction: T
   ): Promise<void> {
@@ -106,7 +107,7 @@ export class FireblocksHederaSigner
       this.cachedTransactionPayloadSignatures,
       `Signing ${transaction.constructor.name} with ${allBodyBytes.length} payloads for ${allBodyBytes.length} nodes`
     );
-    const publicKey = PublicKey.fromBytesED25519(this.vaultAccountPublicKey);
+    // const publicKey = PublicKey.fromBytesED25519(this.vaultAccountPublicKey);
     for (
       let i = 0, sigCounter = 0;
       i < transaction._signedTransactions.length;
@@ -282,8 +283,6 @@ export class FireblocksHederaSigner
   public async checkTransaction<T extends Transaction>(
     transaction: T
   ): Promise<T> {
-    // TODO: Removed part that is related to provider which is not relevant here, might need to re-add it at a later point in time.
-
     const transactionId: TransactionId = transaction.transactionId;
     const accountId: AccountId = AccountId.fromString(this.accountId);
     if (
@@ -301,7 +300,6 @@ export class FireblocksHederaSigner
   public async populateTransaction<T extends Transaction>(
     transaction: T
   ): Promise<T> {
-    // TODO: Removed part that is related to provide which is not relevant here, might need to re-add it at a later point in time.
     const accountId = AccountId.fromString(this.accountId);
     transaction._freezeWithAccountId(accountId);
     if (transaction.transactionId == null) {
