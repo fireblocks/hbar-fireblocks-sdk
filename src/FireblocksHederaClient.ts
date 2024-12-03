@@ -1,16 +1,13 @@
 import {
   AccountId,
-  Cache,
   Client,
   PublicKey,
   Query,
-  Timestamp,
   Transaction,
   TransactionId,
 } from "@hashgraph/sdk";
 import {
   Fireblocks,
-  TransactionStateEnum,
   TransferPeerPathType,
   TransactionOperation,
 } from "@fireblocks/ts-sdk";
@@ -46,7 +43,7 @@ export class FireblocksHederaClient
         "Please provide a non-negative integer for the vault account."
       );
     }
-    if (!existsSync(config.privateKey)) {
+    if (!existsSync(config.secretKeyPath)) {
       throw new Error("Private key path does not exist.");
     }
     if (
@@ -65,7 +62,7 @@ export class FireblocksHederaClient
     this.fireblocksSDK = new Fireblocks({
       apiKey: config.apiKey,
       basePath: config.apiEndpoint,
-      secretKey: readFileSync(config.privateKey, "utf8"),
+      secretKey: readFileSync(config.secretKeyPath, "utf8"),
     });
     this.assetId = config.testnet ? "HBAR_TEST" : "HBAR";
     if (config.maxNumberOfPayloadsPerTransaction)
@@ -122,14 +119,14 @@ export class FireblocksHederaClient
       "hex"
     );
 
-    await this.setupUndelyingClient();
+    await this.setupUnderlyingClient();
   }
 
   public async init() {
     await this.populateVaultAccountData();
   }
 
-  private async setupUndelyingClient() {
+  private async setupUnderlyingClient() {
     try {
       if (this.vaultAccountPublicKey.length == 0)
         await this.populateVaultAccountData();
@@ -139,7 +136,7 @@ export class FireblocksHederaClient
         this.multiSignTx.bind(this)
       );
     } catch (e) {
-      throw new Error(e);
+      throw new Error(`Something went wrong in setup underlying client: ${e}`);
     }
   }
 
@@ -284,56 +281,6 @@ export class FireblocksHederaClient
       )
     )[0];
   }
-
-  public async preSignTransaction<T extends Transaction>(
-    transaction: T
-  ): Promise<void> {
-    const allBodyBytes: Uint8Array[] = [];
-    transaction.setTransactionId(TransactionId.generate(this.accountId));
-    if (!transaction.isFrozen()) {
-      transaction.freezeWith(this);
-    }
-    //@ts-ignore
-    transaction._transactionIds.setLocked();
-    transaction._nodeAccountIds.setLocked();
-    transaction._signedTransactions.list.forEach((signedTx) =>
-      allBodyBytes.push(signedTx.bodyBytes ?? Buffer.alloc(0))
-    );
-    const messagesToSign = allBodyBytes.filter(
-      (bodyBytes) => bodyBytes.length !== 0
-    );
-
-    const signatures = await signMultipleMessages(
-      messagesToSign,
-      this.config.vaultAccountId,
-      this.fireblocksSDK,
-      this.assetId,
-      this.transactionPayloadSignatures,
-      `Signing ${transaction.constructor.name} with ${allBodyBytes.length} payloads for ${allBodyBytes.length} nodes`
-    );
-    const publicKey = PublicKey.fromBytesED25519(this.vaultAccountPublicKey);
-    for (
-      let i = 0, sigCounter = 0;
-      i < transaction._signedTransactions.length;
-      i++
-    ) {
-      const signedTransaction = transaction._signedTransactions.list[i];
-      if (!signedTransaction.bodyBytes) {
-        continue;
-      }
-      // Cache the signatures so that when the transaction is actually executed we will simply pop them from the cache instead
-      const bodyBytesHex =
-        signedTransaction.bodyBytes.length > 0
-          ? Buffer.from(signedTransaction.bodyBytes).toString("hex")
-          : "";
-      if (bodyBytesHex !== "") {
-        this.transactionPayloadSignatures[bodyBytesHex] =
-          signatures[sigCounter];
-      }
-
-      sigCounter++;
-    }
-  }
 }
 
 export async function signMultipleMessages(
@@ -371,7 +318,6 @@ export async function signMultipleMessages(
 
   let transactionTypesToSign = "";
   const messagesForRawSigning = [];
-  //TODO: Check for > 250
   for (const messageData of messagesData) {
     if (!messageData) {
       transactionTypesToSign =

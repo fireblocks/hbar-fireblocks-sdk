@@ -26,13 +26,13 @@ By default Hedera uses several nodes, each node requires a custom payload (with 
 ## How to use the SDK
 
 The primary focus of the SDK is to provide an easily implmentable approach to use the Fireblocks SDK with Hedera's SDK.
-We take into account two potential use-cases as well as providing the signature caching functionality:
+We take into account two potential use-cases:
 
 ### Node count
 
-Hedera SDK offers the ability to send the transaction to multiple nodes in a sequential order in case one does not accept. As such each transaction to a node has their own unique node id embeded in the transaction. This means that each transaction to a node needs to be different and requires its own signature. We offer two approaches to this matter;
+Hedera SDK offers the ability to send the transaction to multiple nodes in a sequential order in case one does not accept. As such each transaction to a node has their own unique node id embeded in the transaction. This means that each transaction to a node needs to be different and requires its own signature.
 
-Set the maximum number of nodes to one; this will make it so that when sending a transaction only a single node (determined by the Hedera's SDK's internal mechanisms), to do this use the `maxNumberOfPayloadsPerTransaction`:
+Set the maximum number of nodes to one; this will make it so that when sending a transaction only a single node (determined by the Hedera's SDK's internal mechanisms), to do this use the `maxNumberOfPayloadsPerTransaction` parameter as part of your `clientConfig`:
 
 ```javascript
 const clientConfig = {
@@ -155,33 +155,59 @@ console.log(
 
 //v2.0.5
 ```
+
 ## Example files
+
 Included in this SDK are [four example files](./examples) showcasing different use cases:
+
 - **HBAR Transfer** - Using the SDK with a single signer AND limiting the number of nodes to one.
 - **HBAR Transfer** - Using the SDK with a single signer AND no limit to the number of nodes.
 - **Token Creation** - Using the SDK with two signers AND limiting the number of nodes to one.
 - **Token Creation** - Using the SDK with two signers AND no limit to the number of nodes.
 
 ### How to run the example scripts
+
 1. Clone the repo
 2. Install the dependencies
+
 ```
 npm install
 ```
+
 3. Update the client config parameters
 4. Run the example script
+
 ```
-ts-node src/script-name.ts
+npx ts-node examples/script-name.ts
 ```
+
+**OR**
+
+```
+npm run example01
+npm run example02
+npm run example03
+npm run example04
+```
+
 ### Successful execution
+
 **HBAR Transfer**
+
 ```
+
 Transaction 0.0.4363872@1730366816.250676454 finished with SUCCESS
+
 ```
+
 **Token Creation**
+
 ```
+
 Token Create Transaction 0.0.4338434@1730471891.681xxx finished with SUCCESS
+
 ```
+
 ## Configuration
 
 The following is the configuration used for the Fireblocks Hedera client setup:
@@ -216,12 +242,11 @@ The following is the configuration used for the Fireblocks Hedera client setup:
      * Hedera SDK allows for signing the same transaction for multiple nodes. This allows us to
      * send the transaction to various nodes until one of them accepts it.
      * This means that for each payload we submit a raw signing transaction.
-     * By default this is set to 1, if you wish to set it to some larger number, it's completely fine, however in that scenario we
-     * suggest to pre-sign the transactions instead of using the standard notation.
-     * @see FireblocksHederaSignerAdditionalFunctionality.preSignTransaction
+     * If not specified in the clientConfig, the default will be multiple node transactions.
      */
     maxNumberOfPayloadsPerTransaction?: number;
 ```
-##Licence
+
+##License
 
 MIT

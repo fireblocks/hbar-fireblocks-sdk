@@ -1,30 +1,33 @@
 {
-	"name": "hedera-fireblocks-sdk",
-	"version": "1.0.0",
-	"description": "Hedera SDK Fireblocks Integration",
-	"main": "test.ts",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/fireblocks/hedera-integration-sdk.git"
-	},
-	"author": "Fireblocks",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/fireblocks/hedera-integration-sdk/issues"
-	},
-	"homepage": "https://github.com/fireblocks/hedera-integration-sdk#readme",
-	"devDependencies": {
-		"@types/long": "^5.0.0",
-		"@types/typescript": "^2.0.0"
-	},
-	"dependencies": {
-		"@fireblocks/ts-sdk": "^3.1.0",
-		"@hashgraph/proto": "^2.14.0-beta.5",
-		"@hashgraph/sdk": "^2.43.0",
-		"ts-node": "^10.9.2",
-		"typescript": "^5.6.2"
-	}
+  "name": "hedera-fireblocks-sdk",
+  "version": "1.0.0",
+  "description": "Hedera SDK Fireblocks Integration",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "example01": "npx ts-node ./examples/createTokenTwoSignersSingleNode.ts",
+    "example02": "npx ts-node ./examples/createTokenTwoSignersMultiNode.ts",
+    "example03": "npx ts-node ./examples/hbarTransferSingleNode.ts",
+    "example04": "npx ts-node ./examples/hbarTransferMultiNode"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fireblocks/hedera-integration-sdk.git"
+  },
+  "author": "Fireblocks",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fireblocks/hedera-integration-sdk/issues"
+  },
+  "homepage": "https://github.com/fireblocks/hedera-integration-sdk#readme",
+  "devDependencies": {
+    "@types/long": "^5.0.0",
+    "@types/typescript": "^2.0.0"
+  },
+  "dependencies": {
+    "@fireblocks/ts-sdk": "^3.1.0",
+    "@hashgraph/proto": "^2.14.0-beta.5",
+    "@hashgraph/sdk": "^2.43.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  }
 }
