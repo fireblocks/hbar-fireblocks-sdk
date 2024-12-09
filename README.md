@@ -216,7 +216,7 @@ The following is the configuration used for the Fireblocks Hedera client setup:
     /**
      * The API User's private key's path
      */
-    privateKey: string;
+    secretKeyPath: string;
 
     /**
      * The API User's API key
